@@ -1,0 +1,43 @@
+version: '3'
+services:
+  api:
+    restart: always # Автоматический перезапуск при сбоях
+    container_name: api_service 
+    build: ./api # Собираем образ из папки ./api
+    ports:
+      - 5555:5000 
+    depends_on:
+      - mysql 
+
+  frontend:
+    restart: always 
+    container_name: frontend_service 
+    build: ./frontend # Собираем образ из папки ./frontend
+    ports:
+      - 8954:8954 
+    depends_on:
+      - mysql 
+
+  mysql:
+    restart: always 
+    container_name: mysql_db
+    image: mysql:latest # Официальный образ MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: password 
+      MYSQL_DATABASE: time_db 
+    volumes:
+      - mysql_storage:/var/lib/mysql
+
+  # Сервис управления базой Adminer
+  adminer:
+    restart: always
+    container_name: db_adminer 
+    image: adminer:latest # Официальный образ Adminer
+    ports:
+      - 8122:8080
+    depends_on:
+      - mysql 
+
+# Определяю volume для сохранения данных MySQL
+volumes:
+  mysql_storage:
